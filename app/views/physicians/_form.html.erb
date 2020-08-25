@@ -1,0 +1,36 @@
+<%= form_with(model: physician, local: true) do |form| %>
+  <% if physician.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(physician.errors.count, "error") %> prohibited this physician from being saved:</h2>
+
+      <ul>
+        <% physician.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+
+  <% 72.times do |i| %>
+    <% availability = @physician.availabilities.find { |a| a.number == i + 1 } %>
+    <% availability ||= @physician.availabilities.build(number: i + 1) %>
+
+    <%= form.fields_for :availabilities, availability do |availability_form| %>
+      <%= availability_form.hidden_field :number, value: availability.number %>
+
+      <%= availability_form.label :_destroy do %>
+        <%= availability_form.check_box :_destroy, {checked: availability.persisted?}, '0', '1' %>
+        <%= availability.number %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
